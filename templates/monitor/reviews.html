@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Отзывы — {{ site_name }}{% endblock %}
+{% block content %}
+<section class="page-heading"><div class="site-container page-heading__inner"><p class="eyebrow">Отзывы</p><h1>Обратная связь помогает стать лучше</h1><p>Здесь появляются отзывы, разрешённые автором к публикации и проверенные администратором.</p></div></section>
+<section class="section"><div class="container narrow">
+{% for item in items %}<article class="review-card"><p>{{ item.text }}</p><small>Отзыв № {{ item.id }} · {{ item.created_at }} UTC</small>{% if item.response %}<p><strong>Ответ:</strong> {{ item.response }}</p>{% endif %}</article>{% else %}<p>Опубликованных отзывов пока нет.</p>{% endfor %}
+<h2>Оставить отзыв</h2>
+{% if intake %}
+{% if request.args.get('submitted') %}<p>Спасибо! Отзыв принят.</p><form method="post" action="{{ url_for('review_monitor.new_form') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-primary">Написать ещё один отзыв</button></form>{% else %}
+<p>Не указывайте ФИО, телефон, email, адреса и сведения о других людях. Для личного обращения используйте раздел «Контакты».</p>
+<form method="post" action="{{ url_for('review_monitor.submit_review') }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="request_id" value="{{ request_id }}">
+<div style="position:absolute;left:-10000px" aria-hidden="true"><label>Сайт <input name="website" tabindex="-1" autocomplete="off"></label></div>
+<label for="review-text">Ваш отзыв</label><textarea id="review-text" name="text" required minlength="3" maxlength="3000" rows="6" style="width:100%"></textarea>
+<p><label><input type="checkbox" name="consent_processing" value="yes" required> Даю отдельное согласие на обработку текста отзыва для рассмотрения обращения, согласно <a href="{{ privacy_url }}">условиям обработки</a>.</label></p>
+<p><label><input type="checkbox" name="consent_publication" value="yes"> Дополнительно разрешаю публикацию обезличенного текста на сайте. Это необязательно.</label></p>
+<button class="btn btn-primary" type="submit">Отправить на проверку</button></form>{% endif %}
+{% else %}<p>Приём отзывов готовится к запуску. Пока можно связаться через <a href="{{ url_for('contact') }}">контакты</a>.</p>{% endif %}
+</div></section>
+<section class="section"><div class="site-container"><h2>Примеры формата</h2><p>DEMO — синтетические примеры, не отзывы клиентов.</p><div class="reviews-grid"><article class="review-card"><p>DEMO: Спасибо, сервисом удобно пользоваться.</p></article><article class="review-card"><p>DEMO: Получила результат, изучаю возможности.</p></article><article class="review-card"><p>DEMO: Возникает ошибка, нужна помощь.</p></article></div></div></section>
+{% endblock %}
